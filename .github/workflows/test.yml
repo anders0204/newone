@@ -17,7 +17,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest] # list of systems to run for. If we build a web-app, usually ubuntu suffices
-        python-version: ["3.9", "3.10"] # list of python versions. Try to always include the latest version
+        python-version: ["3.10"] # list of python versions. Try to always include the latest version
     steps:
       - uses: actions/checkout@v2
       - name: Install poetry
