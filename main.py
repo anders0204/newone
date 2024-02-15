@@ -21,6 +21,8 @@ def parse_cli() -> argparse.Namespace:
         log_kwargs["filename"] = args.log
     logging.basicConfig(**log_kwargs)
     return args
+
+
 def main() -> None:
     logger.debug(f"Launched {__name__}")
     args = parse_cli()

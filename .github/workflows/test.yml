@@ -40,7 +40,7 @@ jobs:
         run: poetry run flake8
       - name: Static type checking
         run: poetry run mypy
-      
+
       - name: Run tests and generate reports
         run: poetry run pytest --cov=newone --cov-report=json:newone_coverage.json --cov-report=html
       - name: Create coverage badge
