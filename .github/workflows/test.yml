@@ -1,0 +1,80 @@
+name: Test suite
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+env:
+  POETRY_VIRTUALENVS_PREFER_ACTIVE_PYTHON: true
+
+jobs:
+  build:
+
+    runs-on: ${{ matrix.os }} # Run this job for different versions
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest] # list of systems to run for. If we build a web-app, usually ubuntu suffices
+        python-version: ["3.9", "3.10"] # list of python versions. Try to always include the latest version
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install poetry
+        run: pipx install poetry
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: poetry
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          poetry install
+      - name: Format imports
+        run: poetry run isort --profile black --check-only --diff .
+      - name: Format code
+        run: poetry run black --check .
+      - name: Lint code
+        run: poetry run flake8
+      - name: Static type checking
+        run: poetry run mypy
+      
+      - name: Run tests and generate reports
+        run: poetry run pytest --cov=newone --cov-report=json:newone_coverage.json --cov-report=html
+      - name: Create coverage badge
+        uses: simula-consulting/manual-coverage-badge@v1
+        with:
+          coverage-json: newone_coverage.json
+          coverage-gist-token: ${{ secrets.GIST_TOKEN }}
+          coverage-gist-id: ${{ secrets.GIST_ID }}
+
+      - name: Fix permissions for htmlcov
+        run: |
+          chmod -c -R +rX "htmlcov" | while read line; do
+              echo "::warning title=Invalid file permissions automatically fixed::$line"
+          done
+
+      - name: Upload pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          name: github-pages
+          path: htmlcov
+  deploy:
+    needs: build
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,35 @@
+[tool.poetry]
+name = "newone"
+version = "0.1.0"
+description = "A short description of the project."
+authors = ["Current maintainer from SC"]
+license = "Proprietary" # Set to something appropriate, but use Proprietary if you don't know.
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.4"
+pytest-cov = "^4.1.0"
+black = "^23.12.1"
+flake8 = "^7.0.0"
+mypy = "^1.8.0"
+isort = "^5.13.2"
+azure-storage-blob = "^12.19.0"
+pre-commit = "^3.6.0"
+python-dotenv = "^1.0.1"
+
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.mypy]
+python_version = "3.9"
+files = "**/*.py"
+disallow_untyped_defs = true
+
+[tool.isort]
+profile = "black"
